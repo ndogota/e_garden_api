@@ -1,0 +1,23 @@
+{
+  "name": "e-garden",
+  "version": "1.0.0",
+  "description": "",
+  "main": "scripts/script-add-plants.js",
+  "scripts": {
+    "plants": "node scripts/script-add-plants.js",
+    "features": "node scripts/script-add-plant-features.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.3.1",
+    "mongoose": "^6.5.4",
+    "shortid": "^2.2.16"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.4"
+  }
+}
