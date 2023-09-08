@@ -4,17 +4,6 @@ const axios = require("axios");
 const User = require("../database/models/user.model");
 require("dotenv").config();
 
-// get the current user session
-const getCurrentUser = async (req, res) => {
-  const session = req.session;
-
-  if (!session) {
-    return res.status(404).json({ error: `No current user !` });
-  }
-
-  return res.status(200).json({ response: session });
-};
-
 // create one user if it does not exist
 const registerUser = async (req, res) => {
   let isAdmin = false;
@@ -27,7 +16,6 @@ const registerUser = async (req, res) => {
   const isUserExist = await User.exists({ email });
 
   if (isUserExist) {
-    console.log(`The account ${email} already exists !`);
     return res.status(400).json({ error: `This account already exists !` });
   }
 
@@ -48,9 +36,6 @@ const registerUser = async (req, res) => {
     );
 
     if (!isSecurePasswordMatch) {
-      console.log(
-        `The user : ${email} wants to be administrator but the password is missing or wrong !`
-      );
       return res
         .status(403)
         .json({ error: `Credentials are missing or wrong !` });
@@ -58,6 +43,7 @@ const registerUser = async (req, res) => {
 
     isAdmin = true;
   }
+
   const user = new User({
     email,
     password: await bcrypt.hash(password, 10),
@@ -73,13 +59,8 @@ const registerUser = async (req, res) => {
         }/mailing/mail`,
         {
           email,
-        }
-      );
-
-      console.log(
-        `User with email : ${email} has been successfully created ${
-          isAdmin ? `and it is an E-Garden administrator` : ``
-        }!`
+        },
+        { withCredentials: true }
       );
 
       return res
@@ -88,7 +69,6 @@ const registerUser = async (req, res) => {
     })
     .catch((err) => {
       if (err) {
-        console.log(`Error user creation :`, err);
         return res.status(500).json({ error: err });
       }
     });
@@ -111,7 +91,6 @@ const loginUser = async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    console.log(`Credentials are wrong !`);
     return res.status(403).json({ error: `Credentials are wrong !` });
   }
 
@@ -124,16 +103,14 @@ const loginUser = async (req, res) => {
     },
     process.env.APP_SECRET_TOKEN,
     {
-      expiresIn: "2h",
+      expiresIn: "1h",
     }
   );
 
-  req.session.user = user.email;
-  req.session.userId = user.userId;
-
   res.cookie("access_token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
+    expiresIn: "1h",
   });
 
   if (user.isAdmin) {
@@ -144,19 +121,15 @@ const loginUser = async (req, res) => {
 
     res.cookie("authorization", secretKeyHashed, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
+      expiresIn: "1h",
     });
   }
 
-  console.log(
-    `User ${
-      user.userId + ` with email : ` + user.email
-    } successfully logged in !`
-  );
-
-  return res
-    .status(200)
-    .json({ response: `You have successfully logged in !` });
+  return res.status(200).json({
+    response: `You have successfully logged in !`,
+    user: user.userId,
+  });
 };
 
 // logout one user if he is logged in
@@ -167,17 +140,12 @@ const logoutUser = async (req, res) => {
     res.clearCookie("authorization");
   }
 
-  console.log(`User ${req.session.userId} successfully logged out !`);
-
-  req.session = null;
-
   return res
     .status(200)
     .json({ response: "You have successfully logged out !" });
 };
 
 module.exports = {
-  getCurrentUser,
   registerUser,
   loginUser,
   logoutUser,

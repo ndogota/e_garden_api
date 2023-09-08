@@ -6,7 +6,6 @@ const userSchema = new Schema({
   userId: { type: String, default: shortid.generate, unique: true },
   email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
   password: { type: String, minlength: 6, required: true },
-  token: String,
   firstname: String,
   lastname: String,
   location: {
