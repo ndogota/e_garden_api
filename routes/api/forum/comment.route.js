@@ -12,34 +12,30 @@ const {
 
 const { authAuthorization } = require("../../../middlewares/auth.middleware");
 
-router.get(`/posts/:postId/comments`, authAuthorization, getCommentsFromPost);
+router.get(`/:postId/comments`, authAuthorization, getCommentsFromPost);
 
-router.post(
-  `/posts/:postId/comments`,
-  authAuthorization,
-  createCommentFromPost
-);
+router.post(`/:postId/comments`, authAuthorization, createCommentFromPost);
 
 router.put(
-  `/posts/:postId/comments/:commentId`,
+  `/:postId/comments/:commentId`,
   authAuthorization,
   updateCommentFromPost
 );
 
 router.delete(
-  `/posts/:postId/comments/:commentId`,
+  `/:postId/comments/:commentId`,
   authAuthorization,
   deleteCommentFromPost
 );
 
 router.put(
-  `/posts/:postId/comments/:commentId/like`,
+  `/:postId/comments/:commentId/like`,
   authAuthorization,
   createLikeCommentFromPost
 );
 
 router.put(
-  `/posts/:postId/comments/:commentId/unlike`,
+  `/:postId/comments/:commentId/unlike`,
   authAuthorization,
   deleteLikeCommentFromPost
 );

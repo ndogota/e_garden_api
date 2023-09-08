@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const session = require("cookie-session");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const { connectMongooseDatabase } = require("./database/connection");
@@ -12,7 +11,13 @@ connectMongooseDatabase();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    // origin: process.env.APP_FRONT_WEB_URI || `http://localhost:3000`,
+    origin: true,
+  })
+);
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(
@@ -30,16 +35,6 @@ app.use(
 );
 
 app.use(cookieParser());
-
-app.use(
-  session({
-    secret: process.env.APP_SESSION_SECRET,
-    cookie: { maxAge: 1000 * 60 * 10, secure: true }, // 10min
-    httpOnly: true,
-    saveUninitialized: true,
-    resave: false,
-  })
-);
 
 const apiUrl = process.env.APP_URL_API;
 
