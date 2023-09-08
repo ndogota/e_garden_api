@@ -12,8 +12,8 @@ const { adminAuthorization } = require("../../../middlewares/admin.middleware");
 
 router.get(`/`, getPlants);
 
-router.get(`/:id`, getPlant);
+router.get(`/:plantId`, getPlant);
 
-router.delete(`/:id`, authAuthorization, adminAuthorization, deletePlant);
+router.delete(`/:plantId`, authAuthorization, adminAuthorization, deletePlant);
 
 module.exports = router;
