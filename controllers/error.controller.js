@@ -1,9 +1,9 @@
 // return an error message if route does not exist
 const getError = async (req, res) => {
   const path = req.originalUrl;
-  req.session && req.session.userId
+  req.userId
     ? console.log(
-        `User ${req.session.userId} wants to access non-existing endpoint : ${path}`
+        `User ${req.userId} wants to access non-existing endpoint : ${path}`
       )
     : console.log(`A user wants to access non-existing endpoint : ${path}`);
 

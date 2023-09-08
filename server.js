@@ -1,5 +1,10 @@
 const express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
+
 const {
   authProxy,
   forumProxy,
@@ -11,6 +16,24 @@ const {
 } = require("./proxies/creation");
 
 const app = express();
+
+app.use(
+  cors({
+    credentials: true,
+    origin: true,
+  })
+);
+app.use(helmet());
+
+app.use(
+  rateLimit({
+    max: 50,
+    windowMs: 60 * 1000,
+    message: `You made too many requests. Please try again later !`,
+  })
+);
+
+app.use(cookieParser());
 
 const apiUrl = process.env.APP_URL_API;
 
